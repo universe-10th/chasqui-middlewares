@@ -1,9 +1,12 @@
 package protocols
 
 import (
+	"errors"
 	"github.com/universe-10th/chasqui"
 	"github.com/universe-10th/chasqui/types"
 )
+
+var ErrHandlerConflict = errors.New("a handler is already registered with that key")
 
 // Handling a message involves the server, the
 // involved attendant, and the received message.
@@ -39,4 +42,20 @@ func (handlers MessageHandlers) Handle(server *chasqui.Server, attendant *chasqu
 	} else {
 		onUnknown(server, attendant, message)
 	}
+}
+
+// Attempts a merge. It only merges if all of the keys in the other
+// handler are unused in the source handler.
+func (handlers MessageHandlers) Merge(otherHandlers MessageHandlers) error {
+	for key, other := range otherHandlers {
+		if current, ok := handlers[key]; ok && current != nil && other != nil {
+			return ErrHandlerConflict
+		}
+	}
+	for key, other := range otherHandlers {
+		if other != nil {
+			handlers[key] = other
+		}
+	}
+	return nil
 }
