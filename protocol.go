@@ -28,9 +28,9 @@ type Protocols map[Protocol]bool
 // it depend on, the following methods involve all the
 // lifecycle:
 // - Started(...): Processes when a server has just
-//   started at certain address. It can veto such
-//   start by returning an error. The server will then
-//   attempt to stop.
+//   started at certain address. It can veto such start
+//   by panicking an error. The server will then attempt
+//   to stop.
 // - Stopped(...): Processes when a server has just
 //   stopped. The server has already stopped and there
 //   is no place (it does not make sense) to veto. This
@@ -38,7 +38,7 @@ type Protocols map[Protocol]bool
 //   run Started() on the server and did not veto it.
 // - AttendantStarted(...): Processes when a socket
 //   has just connected. It can veto such start by
-//   returning an error. The socket will then stop
+//   panicking an error. The socket will then stop
 //   normally.
 // - AttendantStopped(...): Processes when a socket
 //   has just stopped. The socket has already stopped
@@ -49,8 +49,8 @@ type Protocols map[Protocol]bool
 type Protocol interface {
 	Dependencies() Protocols
 	Handlers() MessageHandlers
-	Started(server *chasqui.Server, addr *net.TCPAddr) error
-	AttendantStarted(server *chasqui.Server, attendant *chasqui.Attendant) error
+	Started(server *chasqui.Server, addr *net.TCPAddr)
+	AttendantStarted(server *chasqui.Server, attendant *chasqui.Attendant)
 	AttendantStopped(server *chasqui.Server, attendant *chasqui.Attendant, stopType chasqui.AttendantStopType, err error)
 	Stopped(server *chasqui.Server)
 }
