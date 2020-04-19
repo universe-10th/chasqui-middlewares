@@ -5,6 +5,8 @@ import (
 	"net"
 )
 
+type Protocols map[Protocol]bool
+
 // Implementors of this interface will have the
 // following contract:
 // - Dependencies(): They will know all of their
@@ -45,7 +47,7 @@ import (
 //   protocol did run AttendantStarted() on the socket
 //   and did not veto it.
 type Protocol interface {
-	Dependencies() []Protocol
+	Dependencies() Protocols
 	Handlers() MessageHandlers
 	Started(server *chasqui.Server, addr *net.TCPAddr) error
 	AttendantStarted(server *chasqui.Server, attendant *chasqui.Attendant) error
