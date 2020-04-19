@@ -23,22 +23,20 @@ func traverseDependency(dependency Protocol, traversed Protocols, collected map[
 	return nil
 }
 
-func flatten(dependencies []Protocol) ([]Protocol, []Protocol, error) {
+func flatten(dependencies []Protocol) ([]Protocol, error) {
 	traversed := make(Protocols)
 	collected := make(map[Protocol]int)
 
 	for _, dependency := range dependencies {
 		if err := traverseDependency(dependency, traversed, collected); err != nil {
-			return nil, nil, err
+			return nil, err
 		}
 	}
 
 	count := len(collected)
-	direct := make([]Protocol, count)
-	reverse := make([]Protocol, count)
+	flat := make([]Protocol, count)
 	for protocol, index := range collected {
-		direct[index] = protocol
-		reverse[count-1-index] = protocol
+		flat[index] = protocol
 	}
-	return direct, reverse, nil
+	return flat, nil
 }
