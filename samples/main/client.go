@@ -16,8 +16,6 @@ type SampleClientFunnel struct {
 
 func (funnel SampleClientFunnel) Started(attendant *chasqui.Attendant) {
 	fmt.Printf("Local(%s) starting\n", funnel.clientName)
-	// noinspection GoUnhandledErrorResult
-	attendant.Send("NAME", Args{funnel.clientName}, nil)
 }
 
 func (funnel SampleClientFunnel) MessageArrived(attendant *chasqui.Attendant, message Message) {
