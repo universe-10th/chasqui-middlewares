@@ -48,7 +48,9 @@ func (protocol *AuthProtocol) Handlers() protocols.MessageHandlers {
 			} else {
 				// noinspection GoUnhandledErrorResult
 				attendant.Send("LOGGED_OUT", nil, nil)
+				ctx, _ := attendant.Context("User")
 				attendant.RemoveContext("User")
+				delete(protocol.serverLogins[server], ctx.(User).nick)
 			}
 		},
 		"LOGIN": func(server *chasqui.Server, attendant *chasqui.Attendant, message types.Message) {
@@ -65,7 +67,7 @@ func (protocol *AuthProtocol) Handlers() protocols.MessageHandlers {
 				attendant.Send("INVALID_FORMAT", types.Args{"LOGIN", "Second argument (password) must be a string"}, nil)
 			} else if user, ok := Users[userName]; !ok {
 				// noinspection GoUnhandledErrorResult
-				attendant.Send("INVALID_USER", nil, nil)
+				attendant.Send("INVALID_USER", types.Args{userName}, nil)
 			} else if password != user.password {
 				// noinspection GoUnhandledErrorResult
 				attendant.Send("INVALID_PASSWORD", nil, nil)

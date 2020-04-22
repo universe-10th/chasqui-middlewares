@@ -29,30 +29,32 @@ func (protocol *ChatProtocol) Handlers() protocols.MessageHandlers {
 				// noinspection GoUnhandledErrorResult
 				attendant.Send("INVALID_FORMAT", types.Args{"MSG", "The content must be a string"}, nil)
 			} else {
-				for user, attendant := range protocol.auth.serverLogins[server] {
+				user, _ := attendant.Context("User")
+				for _, attendant := range protocol.auth.serverLogins[server] {
 					// noinspection GoUnhandledErrorResult
-					attendant.Send("MSG_RECEIVED", types.Args{user, text}, nil)
+					attendant.Send("MSG_RECEIVED", types.Args{user.(User).nick, text}, nil)
 				}
 			}
 		}),
 		"PMSG": protocol.auth.AuthRequired(func(server *chasqui.Server, attendant *chasqui.Attendant, message types.Message) {
 			args := message.Args()
 			kwArgs := message.KWArgs()
-			if len(args) != 1 || len(kwArgs) != 0 {
+			if len(args) != 2 || len(kwArgs) != 0 {
 				// noinspection GoUnhandledErrorResult
-				attendant.Send("INVALID_FORMAT", types.Args{"MSG", "Expected 2 positional (string) arguments: user and content, and no keyword arguments"}, nil)
+				attendant.Send("INVALID_FORMAT", types.Args{"PMSG", "Expected 2 positional (string) arguments: user and content, and no keyword arguments"}, nil)
 			} else if targetName, ok := args[0].(string); !ok {
 				// noinspection GoUnhandledErrorResult
-				attendant.Send("INVALID_FORMAT", types.Args{"MSG", "The target username must be a string"}, nil)
+				attendant.Send("INVALID_FORMAT", types.Args{"PMSG", "The target username must be a string"}, nil)
 			} else if text, ok := args[1].(string); !ok {
 				// noinspection GoUnhandledErrorResult
-				attendant.Send("INVALID_FORMAT", types.Args{"MSG", "The content must be a string"}, nil)
-			} else if attendant, ok := protocol.auth.serverLogins[server][targetName]; !ok {
+				attendant.Send("INVALID_FORMAT", types.Args{"PMSG", "The content must be a string"}, nil)
+			} else if attendant2, ok := protocol.auth.serverLogins[server][targetName]; !ok {
 				// noinspection GoUnhandledErrorResult
-				attendant.Send("INVALID_FORMAT", types.Args{"MSG", "The target is not logged in"}, nil)
+				attendant.Send("INVALID_TARGET", types.Args{"PMSG", "The target is not logged in"}, nil)
 			} else {
+				source, _ := attendant.Context("User")
 				// noinspection GoUnhandledErrorResult
-				attendant.Send("MSG_RECEIVED", types.Args{targetName, text}, nil)
+				attendant2.Send("MSG_RECEIVED", types.Args{source.(User).nick, text}, nil)
 			}
 		}),
 	}

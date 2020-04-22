@@ -2,6 +2,7 @@ package protocols
 
 import (
 	"errors"
+	"fmt"
 	"github.com/universe-10th/chasqui"
 	"github.com/universe-10th/chasqui/types"
 )
@@ -34,7 +35,10 @@ func (handlers MessageHandlers) Handle(server *chasqui.Server, attendant *chasqu
 	onUnknown MessageHandler, onPanic MessagePanicHandler) {
 	defer func() {
 		if recovered := recover(); recovered != nil {
-			onPanic(server, attendant, message, recovered)
+			if onPanic != nil {
+				onPanic(server, attendant, message, recovered)
+			}
+			fmt.Println("Panic on handle!", recovered)
 		}
 	}()
 	if onMessage, exists := handlers[message.Command()]; exists {
