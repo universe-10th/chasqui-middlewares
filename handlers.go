@@ -39,7 +39,7 @@ func (handlers MessageHandlers) Handle(server *chasqui.Server, attendant *chasqu
 	}()
 	if onMessage, exists := handlers[message.Command()]; exists {
 		onMessage(server, attendant, message)
-	} else {
+	} else if onUnknown != nil {
 		onUnknown(server, attendant, message)
 	}
 }
