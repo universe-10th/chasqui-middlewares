@@ -6,7 +6,10 @@ import (
 	"github.com/universe-10th/chasqui/marshalers/json"
 )
 
-var auth = &AuthProtocol{}
+var auth = &AuthProtocol{
+	serverConns:  make(map[*chasqui.Server]map[*chasqui.Attendant]bool),
+	serverLogins: make(map[*chasqui.Server]map[string]*chasqui.Attendant),
+}
 var chat = &ChatProtocol{auth}
 var funnel, _ = protocols.NewProtocolsFunnel([]protocols.Protocol{chat, auth})
 
