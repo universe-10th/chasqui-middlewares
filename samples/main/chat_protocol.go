@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"github.com/universe-10th/chasqui"
 	"github.com/universe-10th/chasqui-protocols"
 	"github.com/universe-10th/chasqui/types"
@@ -62,12 +63,18 @@ func (protocol *ChatProtocol) Handlers() protocols.MessageHandlers {
 
 // Nothing needed in these, since the users management is in the auth protocol
 
-func (protocol *ChatProtocol) Started(server *chasqui.Server, addr *net.TCPAddr) {}
+func (protocol *ChatProtocol) Started(server *chasqui.Server, addr *net.TCPAddr) {
+	fmt.Println("Chat started for server:", server, addr)
+}
 
 func (protocol *ChatProtocol) AttendantStarted(server *chasqui.Server, attendant *chasqui.Attendant) {
+	fmt.Println("Chat started for server and socket:", server, attendant)
 }
 
 func (protocol *ChatProtocol) AttendantStopped(server *chasqui.Server, attendant *chasqui.Attendant, stopType chasqui.AttendantStopType, err error) {
+	fmt.Println("Chat stopped for server and socket:", server, attendant, stopType, err)
 }
 
-func (protocol *ChatProtocol) Stopped(server *chasqui.Server) {}
+func (protocol *ChatProtocol) Stopped(server *chasqui.Server) {
+	fmt.Println("Chat stopped for server:", server)
+}

@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"github.com/universe-10th/chasqui"
 	"github.com/universe-10th/chasqui-protocols"
 	"github.com/universe-10th/chasqui/types"
@@ -89,10 +90,12 @@ func (protocol *AuthProtocol) Handlers() protocols.MessageHandlers {
 func (protocol *AuthProtocol) Started(server *chasqui.Server, addr *net.TCPAddr) {
 	protocol.serverConns[server] = make(map[*chasqui.Attendant]bool)
 	protocol.serverLogins[server] = make(map[string]*chasqui.Attendant)
+	fmt.Println("Auth started for server:", server, addr)
 }
 
 func (protocol *AuthProtocol) AttendantStarted(server *chasqui.Server, attendant *chasqui.Attendant) {
 	protocol.serverConns[server][attendant] = true
+	fmt.Println("Auth started for server and socket:", server, attendant)
 }
 
 func (protocol *AuthProtocol) AttendantStopped(server *chasqui.Server, attendant *chasqui.Attendant, stopType chasqui.AttendantStopType, err error) {
@@ -106,11 +109,13 @@ func (protocol *AuthProtocol) AttendantStopped(server *chasqui.Server, attendant
 	if protocol.serverConns != nil {
 		delete(protocol.serverConns[server], attendant)
 	}
+	fmt.Println("Auth stopped for server and socket:", server, attendant, stopType, err)
 }
 
 func (protocol *AuthProtocol) Stopped(server *chasqui.Server) {
 	delete(protocol.serverConns, server)
 	delete(protocol.serverLogins, server)
+	fmt.Println("Chat stopped for server:", server)
 }
 
 func (protocol *AuthProtocol) AuthRequired(handler protocols.MessageHandler) protocols.MessageHandler {
